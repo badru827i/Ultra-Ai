@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Ultra Connect Pro</title>
+    
+    <!-- CSS & Fonts -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- React & Babel -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <style>
+        body { background-color: #000; color: #fff; font-family: -apple-system, system-ui, sans-serif; overflow-x: hidden; }
+        .glass { background: rgba(23, 23, 23, 0.7); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .btn-active:active { transform: scale(0.95); transition: 0.1s; }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .animate-up { animation: slideUp 0.5s ease-out forwards; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        const App = () => {
+            const [view, setView] = useState('intro');
+            const [isLogged, setIsLogged] = useState(false);
+            const [botActive, setBotActive] = useState(false);
+            const [profile, setProfile] = useState({
+                name: "Owner User",
+                tiktok: "@ultra_king",
+                avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Felix"
+            });
+
+            // Effect untuk Intro
+            useEffect(() => {
+                if (view === 'intro') {
+                    setTimeout(() => setView('login'), 3500);
+                }
+            }, [view]);
+
+            // Simulasi Bot Timer
+            useEffect(() => {
+                let interval;
+                if (botActive) {
+                    interval = setInterval(() => {
+                        console.log("Bot sedang menyalin pautan...");
+                    }, 2000);
+                }
+                return () => clearInterval(interval);
+            }, [botActive]);
+
+            if (view === 'intro') return (
+                <div className="h-screen flex items-center justify-center bg-black">
+                    <div className="text-center">
+                        <h1 className="text-4xl font-thin tracking-[0.5em] animate-pulse">WELCOME</h1>
+                        <p className="text-[10px] text-gray-600 mt-4 tracking-[0.2em]">SECURED BY CLOUD</p>
+                    </div>
+                </div>
+            );
+
+            if (view === 'login' && !isLogged) return (
+                <div className="h-screen flex flex-col justify-center p-8 bg-neutral-950">
+                    <div className="glass p-10 rounded-[3rem] text-center shadow-2xl">
+                        <div className="w-20 h-20 bg-white/5 rounded-3xl flex items-center justify-center mx-auto mb-8 border border-white/10">
+                            <i className="fa-brands fa-google text-4xl text-blue-500"></i>
+                        </div>
+                        <h2 className="text-2xl font-bold mb-2">Pilih Akaun</h2>
+                        <p className="text-gray-500 text-xs mb-10">Gunakan akaun Google anda untuk sync TikTok Data</p>
+                        
+                        <button 
+                            onClick={() => { setIsLogged(true); setView('main'); }}
+                            className="w-full bg-white text-black font-bold py-4 rounded-2xl flex items-center justify-center gap-3 btn-active"
+                        >
+                            <img src="https://www.svgrepo.com/show/475656/google-color.svg" className="w-5 h-5" />
+                            admin@google.com
+                        </button>
+                    </div>
+                </div>
+            );
+
+            return (
+                <div className="min-h-screen pb-24 bg-black">
+                    {/* Top Bar */}
+                    <nav className="p-6 flex justify-between items-center sticky top-0 z-50 bg-black/50 backdrop-blur-md">
+                        <div className="font-black italic text-xl">ULTRA<span className="text-blue-600">APP</span></div>
+                        <div className="flex gap-4">
+                            <button onClick={() => setView('admin')} className="p-3 glass rounded-full text-red-500"><i className="fa-solid fa-shield-halved"></i></button>
+                            <button onClick={() => setView('settings')} className="p-3 glass rounded-full"><i className="fa-solid fa-sliders"></i></button>
+                        </div>
+                    </nav>
+
+                    <div className="p-6 space-y-8 animate-up">
+                        {view === 'main' && (
+                            <>
+                                {/* Profile Card */}
+                                <div className="glass p-6 rounded-[2.5rem] flex items-center gap-5">
+                                    <div className="relative">
+                                        <img src={profile.avatar} className="w-20 h-20 rounded-full border-4 border-blue-600 object-cover" />
+                                        <label className="absolute -bottom-1 -right-1 bg-blue-600 w-8 h-8 rounded-full border-4 border-black flex items-center justify-center text-[10px]">
+                                            <i className="fa-solid fa-camera"></i>
+                                            <input type="file" className="hidden" onChange={(e) => {
+                                                const file = e.target.files[0];
+                                                if (file) {
+                                                    const reader = new FileReader();
+                                                    reader.onload = (ev) => setProfile({...profile, avatar: ev.target.result});
+                                                    reader.readAsDataURL(file);
+                                                }
+                                            }} />
+                                        </label>
+                                    </div>
+                                    <div>
+                                        <h3 className="font-bold text-lg">{profile.name}</h3>
+                                        <p className="text-pink-500 text-xs font-bold">{profile.tiktok}</p>
+                                        <div className="mt-2 text-[9px] text-green-500 font-bold uppercase"><i className="fa-solid fa-circle-check"></i> Cloud Synced</div>
+                                    </div>
+                                </div>
+
+                                {/* Menu Grid */}
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div onClick={() => alert("Membuka Downloader...")} className="glass p-6 rounded-3xl text-center btn-active">
+                                        <i className="fa-solid fa-cloud-arrow-down text-pink-500 text-2xl mb-2"></i>
+                                        <p className="text-[10px] font-black uppercase tracking-widest">Video DL</p>
+                                    </div>
+                                    <div onClick={() => alert("AI Assistant sedia membantu!")} className="glass p-6 rounded-3xl text-center btn-active">
+                                        <i className="fa-solid fa-robot text-blue-500 text-2xl mb-2"></i>
+                                        <p className="text-[10px] font-black uppercase tracking-widest">AI Bot</p>
+                                    </div>
+                                </div>
+
+                                {/* Bot Toggle */}
+                                <div className={`p-8 rounded-[2.5rem] border transition-all duration-500 ${botActive ? 'bg-green-600/10 border-green-500/50' : 'glass'}`}>
+                                    <div className="flex justify-between items-center">
+                                        <div className="flex items-center gap-4">
+                                            <div className={`p-4 rounded-2xl ${botActive ? 'bg-green-500 text-black shadow-lg shadow-green-500/40' : 'bg-neutral-800 text-gray-500'}`}>
+                                                <i className="fa-solid fa-paper-plane"></i>
+                                            </div>
+                                            <div>
+                                                <h4 className="font-bold text-sm">Auto Share Bot</h4>
+                                                <p className="text-[10px] text-gray-500 uppercase tracking-tighter">
+                                                    {botActive ? 'Running' : 'Offline'}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <button 
+                                            onClick={() => setBotActive(!botActive)}
+                                            className={`w-14 h-8 rounded-full p-1.5 transition ${botActive ? 'bg-green-500' : 'bg-neutral-700'}`}
+                                        >
+                                            <div className={`w-5 h-5 bg-white rounded-full transition transform ${botActive ? 'translate-x-6' : 'translate-x-0'}`}></div>
+                                        </button>
+                                    </div>
+                                    {botActive && (
+                                        <div className="mt-6 text-center">
+                                            <div className="w-full bg-neutral-800 h-1.5 rounded-full overflow-hidden mb-2">
+                                                <div className="bg-green-500 h-full animate-[progress_20s_linear_infinite]"></div>
+                                            </div>
+                                            <p className="text-[9px] text-green-500 font-bold animate-pulse uppercase">Menyalin 20 pautan ke Cloud...</p>
+                                        </div>
+                                    )}
+                                </div>
+                            </>
+                        )}
+
+                        {view === 'admin' && (
+                            <div className="space-y-6">
+                                <button onClick={() => setView('main')} className="p-3 glass rounded-full w-10 h-10 flex items-center justify-center"><i className="fa-solid fa-chevron-left"></i></button>
+                                <h2 className="text-2xl font-black text-red-500 italic">OWNER CONTROL</h2>
+                                <div className="glass p-6 rounded-3xl space-y-4">
+                                    <div className="flex justify-between text-xs"><span>Server Status</span><span className="text-green-500 font-bold uppercase">Online</span></div>
+                                    <div className="flex justify-between text-xs"><span>Total Requests</span><span className="font-bold">14,202</span></div>
+                                    <button className="w-full bg-red-600 py-4 rounded-2xl font-black text-xs uppercase tracking-widest mt-4">Reset Global Database</button>
+                                </div>
+                            </div>
+                        )}
+
+                        {view === 'settings' && (
+                            <div className="space-y-6">
+                                <button onClick={() => setView('main')} className="p-3 glass rounded-full w-10 h-10 flex items-center justify-center"><i className="fa-solid fa-chevron-left"></i></button>
+                                <h2 className="text-2xl font-black italic">TETAPAN</h2>
+                                <div className="glass p-6 rounded-3xl space-y-6">
+                                    <div className="flex justify-between items-center">
+                                        <span className="text-sm font-bold">Sound Effects</span>
+                                        <div className="w-10 h-6 bg-green-500 rounded-full p-1"><div className="w-4 h-4 bg-white rounded-full ml-auto"></div></div>
+                                    </div>
+                                    <button onClick={() => { setIsLogged(false); setView('login'); }} className="w-full py-4 text-red-500 font-black text-xs uppercase border border-red-500/20 rounded-2xl">Log Keluar</button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+    <style>
+        @keyframes progress { from { width: 0%; } to { width: 100%; } }
+    </style>
+</body>
+</html>
+
